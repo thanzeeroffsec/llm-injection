@@ -4,11 +4,17 @@ import ChallengeAccord from "@/components/ChallengeAccord";
 
 async function fetchChallenges() {
   let challenges = [];
+  console.log(process.env.NEXT_EXTERNAL_BACKEND_ROUTE);
 
   try {
-    const req = await fetch("http://localhost:3000/api/allchallenges"); // Make sure the URL is correct
+    // allchallenges
+    const req = await fetch(
+      `${process.env.NEXT_EXTERNAL_BACKEND_ROUTE}/allchallenges`
+    ); // Make sure the URL is correct
     const data = await req.json();
-    challenges = data.data;
+    console.log(data);
+
+    challenges = data;
   } catch (error) {
     console.log("Error fetching challenges:", error);
   }
