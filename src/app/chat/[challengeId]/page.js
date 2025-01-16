@@ -28,7 +28,7 @@ const Page = async ({ params }) => {
   return (
     <div className="w-full min-h-screen bg-gradient-to-br flex  p-6 justify-center ">
       <Toaster
-        position="bottom-right"
+        position="top-center"
         reverseOrder={false}
         gutter={8}
         containerStyle={{}}

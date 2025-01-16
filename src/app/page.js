@@ -4,7 +4,6 @@ import ChallengeAccord from "@/components/ChallengeAccord";
 
 async function fetchChallenges() {
   let challenges = [];
-  console.log(process.env.NEXT_EXTERNAL_BACKEND_ROUTE);
 
   try {
     // allchallenges

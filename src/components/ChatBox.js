@@ -45,8 +45,6 @@ const ChatBox = ({ challengeId }) => {
 
       const data = await response.json();
 
-      setFlag(data.flag);
-
       if (data.flag === 1) {
         toast.success("challenge completed successfully");
       }
