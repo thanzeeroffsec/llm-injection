@@ -10,11 +10,11 @@ const ChatBox = ({ challengeId }) => {
   const [input, setInput] = useState("");
   const [flag, setFlag] = useState(0);
   const [poison, setPoison] = useState("False");
+  const [llm10, setLlm10] = useState(0);
   const [isRadioButtonNeeded, setRadioButtonNeeded] = useState(false);
 
-  const setRadioButton = () => {
-    let isPoisonNeeded = challengeId === 3 || challengeId === 4;
-    setRadioButtonNeeded(isPoisonNeeded);
+  const determineRadioButtonRequirement = () => {
+    setRadioButtonNeeded(challengeId === 3 || challengeId === 4);
   };
 
   const handleSubmit = async (e) => {
@@ -27,55 +27,102 @@ const ChatBox = ({ challengeId }) => {
     setMessages((prev) => [...prev, userMessage]);
 
     setLoading(true);
+
     try {
       const body = { challengeId, input };
 
-      // Conditionally add poison to the body if isRadioButtonNeeded is true
+      if (challengeId == 3) {
+        body.poison = poison;
+      }
+      if (challengeId == 4) {
+        body.poison = poison;
+      }
+      if (challengeId == 7) {
+        body.flag = flag;
+      }
+      if (challengeId == 10) {
+        body.flag = llm10;
+      }
       if (isRadioButtonNeeded) {
         body.poison = poison;
       }
 
-      const response = await fetch("/api/challenge", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
+      const makeRequest = async () => {
+        const response = await fetch("/api/challenge", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+        return response.json();
+      };
 
-      const data = await response.json();
+      let data;
 
-      if (data.flag === 1) {
-        toast.success("challenge completed successfully");
+      if (challengeId == 10 && llm10 === 1) {
+        for (let i = 0; i <= 50; i++) {
+          try {
+            data = await makeRequest();
+
+            setMessages((prev) => {
+              const lastMessage = prev[prev.length - 1];
+              const updatedMessage = {
+                ...lastMessage,
+                ai: (lastMessage.ai || "") + (data.message || ""),
+              };
+              return [...prev.slice(0, -1), updatedMessage];
+            });
+
+            // Delay between requests
+            await new Promise((resolve) => setTimeout(resolve, 200));
+          } catch (error) {
+            console.error(`Error in iteration ${i}:`, error);
+            toast.error("Something went wrong during message processing.");
+            break;
+          }
+        }
+      } else {
+        data = await makeRequest();
+        setMessages((prev) =>
+          prev.map((msg, index) =>
+            index === prev.length - 1
+              ? { ...msg, ai: data?.message || "Error!" }
+              : msg
+          )
+        );
       }
-      // Update AI's response in the latest message
-      setMessages((prev) =>
-        prev.map((msg, index) =>
-          index === prev.length - 1 ? { ...msg, ai: data.message } : msg
-        )
-      );
+
+      console.log(data.flag);
+
+      if (data.flag === 1 || data.flag == "1") {
+        toast.success("Challenge completed successfully!");
+        setFlag(data.flag);
+
+        const challenges =
+          JSON.parse(localStorage.getItem("challengesStatus")) || {};
+        challenges[challengeId] = "completed";
+        localStorage.setItem("challengesStatus", JSON.stringify(challenges));
+      }
     } catch (error) {
       console.error("Error sending message:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
+      setInput("");
     }
-
-    // Clear input field
-    setInput("");
   };
 
-  const title =
-    challengeId === 1
-      ? "Command Line"
-      : challengeId === 3
-      ? "Choose Plugin"
-      : challengeId === 4
-      ? "Choose Dataset"
-      : "";
-
   useEffect(() => {
-    setRadioButton();
-  }, []);
+    determineRadioButtonRequirement();
+  }, [challengeId]);
+
+  const title =
+    {
+      1: "Command Line",
+      3: "Choose Plugin",
+      4: "Choose Dataset",
+    }[challengeId] || "";
 
   return (
     <>
@@ -128,20 +175,17 @@ const ChatBox = ({ challengeId }) => {
         </button>
       </form>
 
-      {challengeId !== 2 &&
-        challengeId !== 5 &&
-        challengeId !== 6 &&
-        challengeId !== 7 &&
-        challengeId !== 8 &&
-        challengeId !== 9 && (
-          <ChatBoxLogic
-            flag={flag}
-            challengeId={challengeId}
-            title={title}
-            poison={poison}
-            setPoison={setPoison}
-          />
-        )}
+      {![2, 5, 6, 7, 8, 9].includes(challengeId) && (
+        <ChatBoxLogic
+          flag={flag}
+          challengeId={challengeId}
+          title={title}
+          poison={poison}
+          llm10={llm10}
+          setLlm10={setLlm10}
+          setPoison={setPoison}
+        />
+      )}
     </>
   );
 };

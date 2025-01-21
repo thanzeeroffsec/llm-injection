@@ -2,13 +2,25 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { challengeId, input, poison } = await req.json();
+    const { challengeId, input, poison, flag } = await req.json();
     const body = { query: input };
+    if (!challengeId) {
+      return NextResponse.json(
+        { error: "Challenge ID is required" },
+        { status: 400 }
+      );
+    }
+    let slug = challengeId == 10 ? "llm10" : `llm0${challengeId}`;
     if (poison) {
       body.poison = poison;
     }
+
+    if (flag === 0 || flag === 1) {
+      body.flag = flag;
+    }
+
     const request = await fetch(
-      `${process.env.NEXT_EXTERNAL_BACKEND_ROUTE}/llm0${challengeId}/`,
+      `${process.env.NEXT_EXTERNAL_BACKEND_ROUTE}/${slug}/`,
       {
         method: "POST",
         headers: {

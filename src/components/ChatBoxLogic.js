@@ -10,7 +10,7 @@ const Llm01 = ({ flag }) => {
     >
       {flag === 1
         ? "privileage escalated successully "
-        : "        no root access , so command execution not possible"}
+        : "no root access , so command execution not possible"}
     </span>
   );
 };
@@ -79,18 +79,63 @@ const Llm04 = ({ poison, setPoison }) => {
           onChange={(e) => setPoison(e.target.value)}
         />
         <label htmlFor="poison1" className="text-lg font-medium">
-          Good Dataset
+          Bad Dataset
         </label>
       </div>
     </div>
   );
 };
-const ChatBoxLogic = ({ challengeId, flag, poison, setPoison, title }) => {
+
+const Llm10 = ({ llm10, setLlm10 }) => {
+  return (
+    <div className="flex  w-full justify-around">
+      <div className="flex gap-3 items-center">
+        <input
+          type="radio"
+          id="llm10"
+          name="llm10"
+          value={0} // Set the value of this radio button
+          checked={llm10 === 0} // Check if poison is equal to the value
+          className="h-5 w-5"
+          onChange={(e) => setLlm10(parseInt(e.target.value))} // Convert value to number
+        />
+
+        <label htmlFor="llm10" className="text-lg font-medium">
+          Vulnerability off
+        </label>
+      </div>
+      <div className="flex gap-3 items-center">
+        <input
+          type="radio"
+          id="llm101"
+          name="llm101"
+          value={1}
+          checked={llm10 === 1}
+          className="h-5 w-5"
+          onChange={(e) => setLlm10(parseInt(e.target.value))}
+        />
+        <label htmlFor="llm101" className="text-lg font-medium">
+          Vulnerability on
+        </label>
+      </div>
+    </div>
+  );
+};
+const ChatBoxLogic = ({
+  challengeId,
+  flag,
+  poison,
+  setPoison,
+  title,
+  llm10,
+  setLlm10,
+}) => {
   return (
     <ChatBotContent title={title}>
       {challengeId == 1 && <Llm01 flag={flag} />}
       {challengeId == 3 && <Llm03 poison={poison} setPoison={setPoison} />}
       {challengeId == 4 && <Llm04 poison={poison} setPoison={setPoison} />}
+      {challengeId == 10 && <Llm10 llm10={llm10} setLlm10={setLlm10} />}
     </ChatBotContent>
   );
 };

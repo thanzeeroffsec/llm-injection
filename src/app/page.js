@@ -11,7 +11,6 @@ async function fetchChallenges() {
       `${process.env.NEXT_EXTERNAL_BACKEND_ROUTE}/allchallenges`
     ); // Make sure the URL is correct
     const data = await req.json();
-    console.log(data);
 
     challenges = data;
   } catch (error) {

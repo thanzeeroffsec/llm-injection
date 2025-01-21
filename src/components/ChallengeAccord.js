@@ -1,19 +1,34 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const ChallengeAccord = ({ challenges }) => {
   const [activeChallenge, setActiveChallenge] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [challengesState, setChallengesState] = useState({});
+
+  // Load challenges completion state from localStorage on component mount
+  useEffect(() => {
+    const storedChallenges =
+      JSON.parse(localStorage.getItem("challengesStatus")) || {};
+    setChallengesState(storedChallenges);
+  }, []);
 
   const toggleChallenge = (id) => {
     setActiveChallenge(activeChallenge === id ? null : id);
   };
 
-  const handleStartChallenge = () => {
+  const handleStartChallenge = (id) => {
     setLoading(true);
 
     setTimeout(() => {
+      // Simulate challenge completion
+      setChallengesState((prev) => {
+        const newState = { ...prev, [id]: "completed" };
+        // Store the updated challenge status in localStorage
+        localStorage.setItem("challengesStatus", JSON.stringify(newState));
+        return newState;
+      });
       setLoading(false);
     }, 1000);
   };
@@ -37,12 +52,14 @@ const ChallengeAccord = ({ challenges }) => {
             <div className="flex items-center space-x-4">
               <span
                 className={`text-sm px-2 py-1 rounded-md font-medium ${
-                  challenge.completed
+                  challengesState[challenge.id] === "completed"
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
                 }`}
               >
-                {challenge.completed ? "Completed" : "Not Completed"}
+                {challengesState[challenge.id] === "completed"
+                  ? "Completed"
+                  : "Not Completed"}
               </span>
               <span className="text-lg font-medium text-gray-800">
                 {challenge.title}
@@ -66,7 +83,7 @@ const ChallengeAccord = ({ challenges }) => {
               <Link
                 href={`/chat/${challenge?.id}`}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={handleStartChallenge}
+                onClick={() => handleStartChallenge(challenge.id)}
               >
                 Start Challenge
               </Link>
