@@ -93,11 +93,9 @@ const ChatBox = ({ challengeId }) => {
         );
       }
 
-      console.log(data.flag);
-
       if (data.flag === 1 || data.flag == "1") {
         toast.success("Challenge completed successfully!");
-        setFlag(data.flag);
+        //setFlag(data.flag);
 
         const challenges =
           JSON.parse(localStorage.getItem("challengesStatus")) || {};

@@ -18,20 +18,20 @@ const ChallengeAccord = ({ challenges }) => {
     setActiveChallenge(activeChallenge === id ? null : id);
   };
 
-  const handleStartChallenge = (id) => {
-    setLoading(true);
+  // const handleStartChallenge = (id) => {
+  //   setLoading(true);
 
-    setTimeout(() => {
-      // Simulate challenge completion
-      setChallengesState((prev) => {
-        const newState = { ...prev, [id]: "completed" };
-        // Store the updated challenge status in localStorage
-        localStorage.setItem("challengesStatus", JSON.stringify(newState));
-        return newState;
-      });
-      setLoading(false);
-    }, 1000);
-  };
+  //   setTimeout(() => {
+  //     // Simulate challenge completion
+  //     setChallengesState((prev) => {
+  //       const newState = { ...prev, [id]: "completed" };
+  //       // Store the updated challenge status in localStorage
+  //       localStorage.setItem("challengesStatus", JSON.stringify(newState));
+  //       return newState;
+  //     });
+  //     setLoading(false);
+  //   }, 1000);
+  // };
 
   return (
     <div className="space-y-4">
@@ -83,7 +83,6 @@ const ChallengeAccord = ({ challenges }) => {
               <Link
                 href={`/chat/${challenge?.id}`}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={() => handleStartChallenge(challenge.id)}
               >
                 Start Challenge
               </Link>

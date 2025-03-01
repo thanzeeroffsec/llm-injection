@@ -11,7 +11,9 @@ async function fetchChallenge(id) {
   let challenges = [];
 
   try {
-    const req = await fetch(`http://localhost:3000/api/challenge/${id}`); // Make sure the URL is correct
+    const req = await fetch(
+      `${process.env.NEXT_FRONTEND_ROUTE}/api/challenge/${id}`
+    ); // Make sure the URL is correct
     const data = await req.json();
     challenges = data.challenge;
   } catch (error) {
